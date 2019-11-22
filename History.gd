@@ -85,7 +85,7 @@ sync func s_add_point(point, with_collision=true):
 	if with_collision:
 		_add_collision_point(point)
 
-sync func s_reset():
+func reset():
 	for i in get_children():
 		remove_child(i)
 	_all_lines = []

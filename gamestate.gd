@@ -12,6 +12,7 @@ signal size_changed(screen_size, game_size)
 var screen_size = Vector2(1200, 600) setget set_screen_size,get_screen_size
 var game_size = Vector2(1000, 600) setget ,get_game_size
 var _round_ended = false
+var _player_cleaned = 0
 
 func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
@@ -32,12 +33,22 @@ func get_game_size():
 sync func s_pause(p):
 	get_tree().paused = p
 
+master func _m_reset_done():
+	if true:
+		
+		rpc("s_pause", false)
+
+master func m_history_cleaned():
+	_player_cleaned += 1
+	if _player_cleaned == players.get_player_count():
+		rpc("s_pause", false)
+
 func _input(event):
 	if get_tree().has_network_peer() and get_tree().is_network_server():
 		if event.is_action_released("main_action"):
 			if _round_ended:
+				_player_cleaned = 1
 				players.reset_round()
-				rpc("s_pause", false)
 				_round_ended = false
 
 func body_hit_wall(body, new_pos):

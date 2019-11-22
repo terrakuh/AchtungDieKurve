@@ -10,6 +10,9 @@ var _names = {}
 # id: name
 var _alive = {}
 
+func get_player_count():
+	return len(_names)
+
 sync func s_create_player(id, name, color=null):
 	print("creating player", id, name)
 	var player = preload("res://Player.tscn").instance()
@@ -40,13 +43,15 @@ func synchronize_with(id):
 sync func s_set_player_color(name, color):
 	get_node(_names[name]).get_node("history").color = color
 
+puppet func p_clean_histories():
+	for child in get_children():
+		child.get_node("history").reset()
+	gamestate.rpc("m_history_cleaned")
+
 func reset_round():
 	assert(get_tree().is_network_server())
 	
-	# clear history
-	for child in get_children():
-		child.get_node("history").rpc("s_reset")
-	
+	rpc("p_clean_histories")
 	_alive.clear()
 	
 	# new positions
@@ -70,7 +75,7 @@ func reset_round():
 		player.rpc("s_reset", positions[i], rnd.randf_range(0, 2 * PI))
 		_alive[get_child(i).name] = player.player_name
 	
-	powerups.rpc("m_start_round")
+	powerups.start_round()
 
 master func m_kill_player(name):
 	if _alive.erase(_names[name]):
@@ -85,5 +90,5 @@ master func m_kill_player(name):
 func get_alive_players():
 	var p = []
 	for i in _alive:
-		p.append(get_node(i))
+		p.append(get_node(i).get_node("player"))
 	return p

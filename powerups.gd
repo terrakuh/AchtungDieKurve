@@ -27,6 +27,6 @@ sync func _s_reset():
 		if child.name != "timer":
 			child.queue_free()
 
-master func m_start_round():
+func start_round():
 	rpc("_s_reset")
 	get_node("timer").start()
