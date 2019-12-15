@@ -29,6 +29,7 @@ var p
 func init(player):
 	p = player
 	if is_network_master():
+		player.connect("thickness_changed", self, "set_thickness")
 		connect("body_entered", self, "_on_body_entered")
 		player.connect("player_moved", self, "t")
 

@@ -1,6 +1,7 @@
 extends Node2D
 
 signal player_moved(old_position)
+signal thickness_changed(thickness)
 
 var thickness = gamestate.DEFAULT_THICKNESS setget set_thickness
 var player_name
@@ -28,6 +29,7 @@ sync func s_reset(position, rotation):
 func set_thickness(val):
 	scale = Vector2(val / gamestate.DEFAULT_THICKNESS, val / gamestate.DEFAULT_THICKNESS)
 	thickness = val
+	emit_signal("thickness_changed", thickness)
 
 func _handle_input():
 	if Input.is_action_pressed("move_right"):
